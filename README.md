@@ -15,4 +15,4 @@
 pip install -r requirements.txt
 
 ## 執行程式
-python -m streamlit run  app_0918.py 
+python -m streamlit run  app.py 
