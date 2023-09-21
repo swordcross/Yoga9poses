@@ -51,7 +51,7 @@ new_height = 621  # 新的高度
 # 初始化關鍵點檢測和分類模型
 detection_keypoint = DetectKeypoint()
 classification_keypoint = KeypointClassification(
-    './My_models/pose_classification_epoches=400.pt'
+    './My_models/pose_classification0920.pt'
 )
 
 # Create layout

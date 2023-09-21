@@ -1,13 +1,13 @@
 # Yoga9poses
 ### anaconda 
 ## Anaconda Prompt
-(base) C:\Users\user\Desktop> conda create --name projectname python=3.11
+(base) C:\Users\user\Desktop> conda create --name denvname python=3.11
 
 (base) C:\Users\user\Desktop>cd projectname
 
-(base) C:\Users\user\Desktop\9poses0918>conda activate projectname
+(base) C:\Users\user\Desktop\projectname>conda activate denvname
 
-(projectname) C:\Users\user\Desktop\9poses0918>code .
+(denvname) C:\Users\user\Desktop\projectname>code .
 
 ### VS code
 

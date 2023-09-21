@@ -6,7 +6,7 @@ class NeuralNet(nn.Module):
         self, 
         input_size = 24, 
         hidden_size = 256, 
-        num_classes = 9
+        num_classes = 8
     ):
         super(NeuralNet, self).__init__()
         self.l1 = nn.Linear(input_size, hidden_size)
@@ -22,7 +22,7 @@ class NeuralNet(nn.Module):
 class KeypointClassification:
     def __init__(self, path_model):
         self.path_model = path_model
-        self.classes = ['Triangle', 'bridge', 'child', 'cowcat', 'downdog', 'goddess', 'pigeon', 'tree', 'warrior2']
+        self.classes = ['bridge', 'child', 'cowcat', 'downdog', 'goddess', 'tree', 'triangle', 'warrior2']
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.load_model()
 
