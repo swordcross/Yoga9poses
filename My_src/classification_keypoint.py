@@ -39,17 +39,21 @@ class KeypointClassification:
         out = self.model(input_keypoint)
         _, predict = torch.max(out, -1)
         prenumber=out[predict].item()
-        if prenumber < 0.0 :
-            label_predict=str(prenumber)+"_"+"nodetection"+"_"+self.classes[predict]
+        #預測要超過0 不然判斷成未偵測
+        if prenumber < 2.0 :
+            #label_predict=str(prenumber)+"_"+"nodetection"+"_"+self.classes[predict]
+            #label_predict=str(prenumber)+"_"+"nodetection"
+            label_predict="nodetection"
         else:    
             #label_predict  = str(prenumber)+"_"+self.classes[predict]
-            label_predict  = str(prenumber)+"_"+self.classes[predict]
+            #label_predict  = str(prenumber)+"_"+self.classes[predict]
+            label_predict  = self.classes[predict]
         return label_predict
         #return label_predict
 
 if __name__ == '__main__':
     keypoint_classification = KeypointClassification(
-        path_model='pose_classification_epoches=400.pt'
+        path_model='pose_classification0920.pt'
     )
     dummy_input = torch.randn(23)
     classification = keypoint_classification(dummy_input)

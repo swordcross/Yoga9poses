@@ -14,6 +14,10 @@ from check_pose import check_pose
 cp = check_pose()
 
 
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
+
 # 初始化
 # engine = pyttsx3.init()
 # voices = engine.getProperty('voices')
@@ -30,12 +34,21 @@ cp = check_pose()
 
 # import time
 
+
 # Streamlit設定
 st.set_page_config(
     layout="wide",
     page_title="Real-time Webcam Stream",
 )
+
+local_css("style.css")
+
+
 st.title("Real-time Webcam Stream")
+
+
+
+
 
 # 開始捕獲攝像頭畫面stream
 video_capture = cv2.VideoCapture(0)  # 0表示預設攝像頭
@@ -56,20 +69,24 @@ classification_keypoint = KeypointClassification(
 
 # Create layout
 #canvMain = st.empty()
-can1, can2, can3 = st.columns(3)
+can1, can2, can3 ,can4= st.columns(4)
 
 ph1 = can1.empty()
 ph2 = can2.empty()
 ph3 = can3.empty()
-
+ph4 = can4.empty()
+ph4str=""
 image = Image.open("./My_images/nodetection.jpg")
-ph1.image(image, caption="標準姿勢", use_column_width=True)
+ph1.image(image, caption="偵測姿勢....", use_column_width=True)
 
 # 創建一個用於顯示攝像頭畫面的Streamlit元素
 #frame_placeholder = st.empty()
 #frame_placeholder = st.container()
 olddetect="nodetection"
 newdetect="nodetection"
+framelist=[]
+frameset=set()
+
 while True:
    
     ret, frame = video_capture.read()  # 讀取攝像頭畫面
@@ -81,11 +98,20 @@ while True:
     dtchange=0
     # 進行關鍵點檢測
     image_cv = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # 將畫面轉換為RGB格式
+
+    
     try:
         results = detection_keypoint(image_cv)  # 使用關鍵點檢測模型進行檢測
         if "keypoints" not in results._keys:  #檢查是否存在關鍵點
             # 如果未檢測到關鍵點，繼續顯示攝像頭畫面並跳過後面的處理
             ph2.image(frame, channels="RGB", use_column_width=False)
+
+            #未檢測當成 nodetection
+            framelist.append('nodetection')
+
+            #debug
+            ph4str=ph4str+str(len(framelist))+":"+'nodetection'
+
             continue
 
         # 獲取關鍵點信息
@@ -131,32 +157,76 @@ while True:
         # 顯示攝像頭畫面
         #frame_placeholder.image(image_draw, channels="RGB", use_column_width=False)
         ph2.image(image_draw, channels="RGB", use_column_width=True)
+        
         newdetect=results_classification.upper()
         
-        if olddetect!=newdetect:
-            olddetect=newdetect
-            dtchange=1
-        else:
-            dtchange=0
-
-
+        framelist.append(newdetect)
+          
+        #debug
+        #ph4str=ph4str+str(len(framelist))+":"+newdetect
 
         # on left, display standard pose image, according to predit rsult
         # on right display check function
         d = datetime.datetime.now() - check_time
-        if d.seconds > 5 :
-            #每5秒判斷
-            piclist=newdetect.split("_")
-            image = Image.open("./My_images/"+f'{piclist[1].lower()}'+".jpg")
-            ph1.image(image, caption="標準姿勢", use_column_width=True)
 
+        if d.seconds > 3 :
+            #每3秒判斷
+            #piclist=newdetect.split("_")
+            #frameset=set(framelist)
+            newdetect=max(set(framelist))
+
+            if olddetect!=newdetect:
+                olddetect=newdetect
+                dtchang=1            
+                
+                captionstr="偵測姿勢...." if newdetect.lower()=='nodetection' else"標準姿勢"
+                image = Image.open("./My_images/"+f'{newdetect.lower()}'+".jpg")
+                
+                ph1.image(image, caption=captionstr, use_column_width=True)
+
+            else:
+                dtchange=0 
+
+            framelist.clear()
+            frameset.clear()
+            
             check_time = datetime.datetime.now()
             checkstr=""
-            
+
             if results_keypoint !="" :
-                 checkstr=cp.check(newdetect,results_keypoint)
-        
-            ph3.markdown(checkstr, unsafe_allow_html = True)
+                if newdetect.lower()=='nodetection': 
+                    checkstr=""
+                    ph3.markdown(checkstr, unsafe_allow_html = True)
+                else:
+                    safty=0
+                    checkstr=cp.check(newdetect,results_keypoint)[1]
+                    #判斷是否安全
+                    safty=cp.check(newdetect,results_keypoint)[0]
+                    new_title='''<p style="font-family:sans-serif; color:Black; font-size: 42px;">Good Job!!</p>'''
+
+                    if safty==1:
+                        new_title = '''<p style="font-family:sans-serif; color:Red; font-size: 42px;">!!Notice!!!</p>'''
+                        new_title= new_title+checkstr
+                 
+                    ph3.markdown(new_title, unsafe_allow_html = True) 
+
+                    #HeadingMixin.title() got an unexpected keyword argument 'unsafe_allow_html'
+                    # ph3.title("Safty", unsafe_allow_html = True)
+       
+            else:
+                if dtchange==1:
+                    checkstr=""
+                    ph3.markdown(checkstr, unsafe_allow_html = True)
+
+                
+                #判斷是否安全
+            
+            #ph3.title("Safty", unsafe_allow_html = True)
+
+            #ph3.markdown(checkstr, unsafe_allow_html = True)
+            
+        ph4.markdown(ph4str, unsafe_allow_html = True)
+            
 
             #語音
             # if(dtchange==1):           

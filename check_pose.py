@@ -114,16 +114,64 @@ class check_pose:
                         # 兩手腕角度, shoulder_midpoint:肩膀中點
                         arm_angle = check_pose.calculate_angle(left_wrist , shoulder_midpoint, right_wrist)
                         md += f'手臂張開角度: {arm_angle} 度<br>'
+
+                        if arm_angle>200 or arm_angle<160:
+                            nosafysign=1
+                            noticestr+="手臂，肩膀請保持在同一直線上"
                                 
                     case 'downdog':
                         # 身體彎曲角度, 用左側計算 
                         bending_angle = check_pose.calculate_angle(left_shoulder , left_hip, left_knee)
+                        bending_angle_right = check_pose.calculate_angle(right_shoulder , right_hip, right_knee)
+
                         md += f'身體彎曲角度: {bending_angle} 度<br>'
+                        
+                        if bending_angle<35:
+                            nosafysign=1
+                            noticestr+="請盡量延展身體，注意手與腳的前後距離<br>"
+
+                        if bending_angle>65:
+                            nosafysign=1
+                            noticestr+="請收緊核心臀部上提<br>"
+
+
+                        if bending_angle>65:
+                            nosafysign=1
+                            noticestr+="請收緊核心臀部上提<br>"  
+
+                        if left_elbow_angle>200 or left_elbow_angle<160:
+                            nosafysign=1
+                            noticestr+="左手臂請打直<br>"
+
+                        if right_elbow_angle>200 or right_elbow_angle<160:
+                            nosafysign=1
+                            noticestr+="右手臂請打直<br>"
+
+
+                        if left_knee_angle>200 or left_knee_angle<160:
+                            nosafysign=1
+                            noticestr+="左腳請打直<br>"
+
+                        if right_knee_angle>200 or right_knee_angle<160:
+                            nosafysign=1
+                            noticestr+="右腳請打直<br>"                       
+
 
                     case 'bridge':
                         # 身體後仰角度, 用左側計算 
                         back_angle = check_pose.calculate_angle(left_ankle, left_knee, left_shoulder)
+                        back_angle_180 = check_pose.calculate_angle((key_points[26],key_points[27]+1), left_knee, left_shoulder)
                         md += f'身體後仰角度: {back_angle} 度<br>'
+
+
+                        if back_angle<30 or back_angle>60:
+                            nosafysign=1
+                            noticestr+="腳踝和膝蓋請垂直地面，收緊並抬高臀肌<br>" 
+                        
+                        if back_angle_180<170 or back_angle>190:
+                            nosafysign=1
+                            noticestr+="將膝蓋、身體和肩膀維持在一直線上<br>" 
+
 
                     case 'cowcat':
                         # 手臂垂直度, 用左側計算 第3點用 left_wrist+(1,0)
@@ -133,15 +181,35 @@ class check_pose:
                         thigh_vertical_angle = check_pose.calculate_angle(left_hip, left_knee, (key_points[26]+1,key_points[27]) )
                         md += f'大腿垂直度: {thigh_vertical_angle} 度<br>'
 
+                        if arm_vertical_angle<75 or arm_vertical_angle>105:
+                            nosafysign=1
+                            noticestr+="請把手打直並垂直於地面<br>" 
+                        
+                        if arm_vertical_angle<75 or arm_vertical_angle>105:
+                            nosafysign=1
+                            noticestr+="請把大腿打直並垂直於地面<br>"
+
                     case 'child':
                         # 前俯角度, 用左側計算 
                         bend_over_angle = check_pose.calculate_angle(left_knee, left_hip, left_shoulder)
+
+                        bend_over_angle_2 = check_pose.calculate_angle(left_ankle, left_hip, left_wrist)
+
                         md += f'前俯角度: {bend_over_angle} 度<br>'
+                        
+                        if bend_over_angle_2<170 or arm_vertical_angle>190:
+                            nosafysign=1
+                            noticestr+="請把手掌、膝蓋、腳踝同時觸碰地面<br>"
+
 
                     case 'goddess':
                         # 大腿水平度 
                         thigh_horizontal_angle = check_pose.calculate_angle(left_knee, hip_midpoint, right_knee)
                         md += f'大腿水平度: {thigh_horizontal_angle} 度<br>'
+                        
+                        if thigh_horizontal_angle<170 or thigh_horizontal_angle>190:
+                            nosafysign=1
+                            noticestr+="請張開大腿，並盡可能與地面平行<br>"
 
                     case 'pigeon':
                         # 左大腿角度 
@@ -155,11 +223,23 @@ class check_pose:
                         # 身體傾斜度 
                         #lean_angle = check_pose.calculate_angle(shoulder_midpoint , hip_midpoint, )
                         md += f'身體傾斜度: {body_angle} 度<br>'
+                        noticestr+=f'請保持身體為一直線,目前偏移{body_angle}度'
+                        
+                        if (body_angle)>10 or ((body_angle)<0 and (body_angle)<-10):
+                            nosafysign=1
+                            noticestr+=f'請保持身體為一直線,目前偏移{body_angle}度'
+
+
 
                     case 'warrior2':
                         # 兩手腕角度, shoulder_midpoint:肩膀中點
                         arm_angle = check_pose.calculate_angle(left_wrist , shoulder_midpoint, right_wrist)
                         md += f'手臂水平角度: {arm_angle} 度<br>'
+
+
+                        if arm_angle>200 or arm_angle<160:
+                            nosafysign=1
+                            noticestr+="手臂，肩膀請保持在同一直線上並與地面平行"
 
 
             else:
@@ -170,5 +250,10 @@ class check_pose:
 
             if debug:
                 print(md)
+            
+            reList=[nosafysign,noticestr,md]
+            
+    
+            return reList
 
-            return md
+

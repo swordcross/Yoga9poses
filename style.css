@@ -1,0 +1,8 @@
+body {
+  background-color: lightgoldenrodyellow;
+}
+
+div[data-testid="stHorizontalBlock"]  {
+  background-color: red;
+  background-image: url('../My_images/3.jpeg');
+}
