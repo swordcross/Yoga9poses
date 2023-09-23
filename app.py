@@ -2,6 +2,7 @@ import cv2
 import streamlit as st
 import numpy as np
 import pyttsx3
+import base64
 
 from PIL import Image
 
@@ -14,9 +15,43 @@ from check_pose import check_pose
 cp = check_pose()
 
 
-def local_css(file_name):
-    with open(file_name) as f:
-        st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
+# def local_css(file_name):
+#     with open(file_name) as f:
+#         st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
+
+@st.cache(allow_output_mutation=True)
+
+def get_base64_of_bin_file(bin_file):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+
+def sidebar_bg(side_bg):
+
+   side_bg_ext = 'png'
+
+   st.markdown(
+      f"""
+      <style>
+      div [data-testid=stImage]  img:nth-of-type(1) {{
+            text-align: center;
+            display: block;
+            margin-top:10%;
+            margin-left:auto ;
+            margin-right: 10%;
+            }}
+
+      div[data-testid="stHorizontalBlock"]   {{
+          background: url(data:image/{side_bg_ext};base64,{base64.b64encode(open(side_bg, "rb").read()).decode()});
+          
+          background-repeat:no-repeat;
+          background-size:100% 100%;
+      }}
+      </style>
+      """,
+      unsafe_allow_html=True,
+      )
 
 # 初始化
 # engine = pyttsx3.init()
@@ -41,8 +76,14 @@ st.set_page_config(
     page_title="Real-time Webcam Stream",
 )
 
-local_css("style.css")
+#local_css("./My_scrpits/style.css")
 
+#side_bg = './My_images/bg6.png'
+#sidebar_bg(side_bg)
+
+
+
+#[img]https://upload.cc/i1/2023/09/23/0k51Kd.png[/img]
 
 st.title("Real-time Webcam Stream")
 
@@ -53,13 +94,17 @@ st.title("Real-time Webcam Stream")
 # 開始捕獲攝像頭畫面stream
 video_capture = cv2.VideoCapture(0)  # 0表示預設攝像頭
 
-video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)  # 設定寬度
-video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)  # 設定高度
+video_capture.set(cv2.CAP_PROP_FRAME_WIDTH, 896)  # 設定寬度
+video_capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 836)  # 設定高度
 video_capture.set(cv2.CAP_PROP_FPS, 30)  # 設定幀速率
 
 # 設定要減小的畫面大小
-new_width = 828  # 新的寬度
-new_height = 621  # 新的高度
+new_width = 896  # 新的寬度
+new_height = 836  # 新的高度
+
+#new_width = 828  # 新的寬度
+#new_height = 621  # 新的高度
+
 
 # 初始化關鍵點檢測和分類模型
 detection_keypoint = DetectKeypoint()
@@ -69,13 +114,15 @@ classification_keypoint = KeypointClassification(
 
 # Create layout
 #canvMain = st.empty()
-can1, can2, can3 ,can4= st.columns(4)
+can1, can2, can3 = st.columns(3)
+
+
 
 ph1 = can1.empty()
 ph2 = can2.empty()
 ph3 = can3.empty()
-ph4 = can4.empty()
-ph4str=""
+
+#ph4str=""
 image = Image.open("./My_images/nodetection.jpg")
 ph1.image(image, caption="偵測姿勢....", use_column_width=True)
 
@@ -104,13 +151,13 @@ while True:
         results = detection_keypoint(image_cv)  # 使用關鍵點檢測模型進行檢測
         if "keypoints" not in results._keys:  #檢查是否存在關鍵點
             # 如果未檢測到關鍵點，繼續顯示攝像頭畫面並跳過後面的處理
-            ph2.image(frame, channels="RGB", use_column_width=False)
+            ph2.image(frame, channels="RGB",use_column_width=False)
 
             #未檢測當成 nodetection
             framelist.append('nodetection')
 
             #debug
-            ph4str=ph4str+str(len(framelist))+":"+'nodetection'
+            #ph4str=ph4str+str(len(framelist))+":"+'nodetection'
 
             continue
 
@@ -225,7 +272,7 @@ while True:
 
             #ph3.markdown(checkstr, unsafe_allow_html = True)
             
-        ph4.markdown(ph4str, unsafe_allow_html = True)
+        #ph4.markdown(ph4str, unsafe_allow_html = True)
             
 
             #語音

@@ -1,0 +1,9 @@
+body {
+  background-color: lightgoldenrodyellow;
+}
+
+div[data-testid="stHorizontalBlock"]  div:nth-of-type(2) {
+  background-image: url('https://upload.cc/i1/2023/09/23/0k51Kd.png');
+  background-repeat:no-repeat;
+  background-size:100% 100%;
+}
