@@ -1,4 +1,4 @@
-opencv-contrib-python==4.6.0.66
+opencv-python==4.6.0.66
 torch==2.0.1
 streamlit==1.26.0
 pydantic==2.3.0
