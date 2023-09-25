@@ -1,6 +1,5 @@
 opencv-python==4.6.0.66
 torch==2.0.1
-streamlit==1.26.0
 pydantic==2.3.0
 ultralytics==8.0.181
 pyttsx3==2.90
