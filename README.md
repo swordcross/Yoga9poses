@@ -18,5 +18,5 @@ pip install -r requirements.txt
 python -m streamlit run  app.py 
 
 
-## 演示
+## 演示影片
 [<img src="https://img.youtube.com/vi/ar11eW3ZPk0/0.jpg" width="50%">](https://www.youtube.com/watch?v=ar11eW3ZPk0 "Real time Webcam Stream")
